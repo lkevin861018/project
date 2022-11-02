@@ -23,8 +23,9 @@ from django.conf import settings
 
 urlpatterns = [
     re_path(r'^signIn/', views.signIn, name='signIn'),
-    re_path(r'^postsignIn', views.postsignIn, name='postsignIn'),
-    # re_path(r'^confirm', views.confirm, name='confirm'),
+    re_path(r'^login/', views.login, name='login'),
+    re_path(r'^logout/', views.logout, name='logout'),
+    re_path(r'^confirm/', views.confirm, name='confirm'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

@@ -1,4 +1,5 @@
 from asyncio.windows_events import NULL
+from urllib import response
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
@@ -9,42 +10,19 @@ import re
 # Create your views here.
 
 
-# def sendSimpleEmail(request, email):
-#     res = send_mail("confirm mail", "<a href='/main/confirm'>點擊認證</a><br>",
-#                     "kevinliang1018@gmail.com", email)
-#     return HttpResponse('%s' % res)
-
-
-# def confirm(request):
-#     dreamreal = Dreamreal(
-#         lastname=str(info[0]),
-#         firstname=str(info[1]),
-#         pid=str(info[2]),
-#         email=str(info[3]),
-#         passwd=str(info[4])
-#     )
-#     dreamreal.save()
-#     messages.add_message(
-#         request, messages.INFO, '註冊成功')
-#     return render(request, 'login.html')
+def confirm(request):
+    res = send_mail("confirm mail", "<a href='127.0.0.1:8000/main/complete'>點擊認證</a><br>",
+                    "kevinliang1018@gmail.com", ['kevinliang1018@gmail.com'])
+    return HttpResponse('%s' % res)
 
 
 def signIn(request):
-    return render(request, 'signIn.html')
-
-
-info = []
-
-
-def postsignIn(request):
     if request.method == 'POST':
         lastname = request.POST['last_name']
         firstname = request.POST['first_name']
         pid = request.POST['pid']
         email = request.POST['email']
         passwd = request.POST['passwd']
-        global info
-        info = [lastname, firstname, pid, email, passwd]
 
         try:
             if '' in [lastname, firstname, pid, email, passwd]:
@@ -73,28 +51,13 @@ def postsignIn(request):
                 dreamreal.save()
                 messages.add_message(
                     request, messages.INFO, '註冊成功')
-                return render(request, 'login.html')
-                # return HttpResponse('請至信箱認證!')
+                return redirect('login')
         except:
             messages.add_message(
                 request, messages.INFO, '身分證或email已註冊過!')
             return render(request, 'signIn.html')
-
-    # # Read ALL entries
-    # objects = Dreamreal.objects.all()
-    # res = 'Printing all Dreamreal entries in the DB : <br>'
-
-    # for elt in objects:
-    #     res += elt.name + "<br>"
-
-    # # Read a specific entry:
-    # sorex = Dreamreal.objects.get(name="alvin")
-    # res += 'Printing One entry <br>'
-    # res += sorex.name
-
-    # # Delete an entry
-    # res += '<br> Deleting an entry <br>'
-    # sorex.delete()
+    else:
+        return render(request, 'signIn.html')
 
     # # Update
     # dreamreal = Dreamreal(
@@ -114,32 +77,55 @@ def postsignIn(request):
     # return HttpResponse(res)
 
 
-# def login(request):
-#     if request.method == 'POST':
-#         name = request.POST['user']
-#         passwd = request.POST['passwd']
+def login(request):
+    if request.method == 'POST':
+        if request.session.has_key('account'):
+            account = request.session['account']
+            passwd = request.session['passwd']
+        else:
+            account = request.POST['account']
+            passwd = request.POST['passwd']
 
-#         try:
-#             user = account.objects.get(userName=name)
-#             if user.passwd == passwd:
-#                 return HttpResponse('success')
-#             else:
-#                 return HttpResponse('fail')
-#         except:
-#             return HttpResponse('no account')
-#     else:
-#         return render(request, 'login.html')
+        try:
+            try:
+                user = Dreamreal.objects.get(pid=account)
+                request.session['account'] = user.pid
+            except:
+                user = Dreamreal.objects.get(email=account)
+                request.session['account'] = user.email
+
+            if user.passwd == passwd:
+                request.session['passwd'] = user.passwd
+                return render(request, 'main.html')
+            else:
+                messages.add_message(
+                    request, messages.INFO, '帳號或密碼錯誤!')
+                return render(request, 'login.html')
+        except:
+            messages.add_message(
+                request, messages.INFO, '帳號不存在!')
+            return render(request, 'login.html')
+    else:
+        return render(request, 'login.html')
 
 
-# def loginProcess(request):
-#     name = request.POST('user')
-#     passwd = request.POST('passwd')
+def logout(request):
+    try:
+        del request.session['account']
+        del request.session['passwd']
+    except:
+        pass
+    return redirect("login")
 
-#     try:
-#         user = account.objects.get(userName=name)
-#         if user.passwd == passwd:
-#             return HttpResponse('success')
-#         else:
-#             return HttpResponse('fail')
-#     except:
-#         return HttpResponse('no account')
+    # def loginProcess(request):
+    #     name = request.POST('user')
+    #     passwd = request.POST('passwd')
+
+    #     try:
+    #         user = account.objects.get(userName=name)
+    #         if user.passwd == passwd:
+    #             return HttpResponse('success')
+    #         else:
+    #             return HttpResponse('fail')
+    #     except:
+    #         return HttpResponse('no account')

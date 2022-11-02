@@ -7,18 +7,21 @@
     <title>Document</title>
 </head>
 <body>
+    <form action = "/main/login/" method = "POST">
+
     {% for message in messages %}
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>歡迎使用</strong> {{ message }}
+            {{ message }}
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     {% endfor %}
+    {% csrf_token %}
     <h1>登入畫面</h1>
-    <span>請輸入身分證或電子郵件：</span><input type="text" name="" id="">
+    <span>請輸入身分證或電子郵件：</span><input type="text" name="account" id="">
     <br>
-    <span>請輸入密碼：</span><input type="password" name="" id="">
+    <span>請輸入密碼：</span><input type="password" name="passwd" id="">
     <br>
-    <input type="button" value="提交">
+    <input type="submit" value="提交">
     <h6>登入問題回報</h6>
     <h6>忘記帳號或密碼</h6>
     <h6>或使用其他帳戶登入</h6>
