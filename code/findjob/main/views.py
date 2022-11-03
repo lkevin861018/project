@@ -6,14 +6,35 @@ from django.contrib import messages
 from main.models import Dreamreal
 from django.core.mail import send_mail
 import re
+import string
+import random
 
 # Create your views here.
 
+complete = []
+complete_key = ''.join(random.choice(string.ascii_letters + string.digits)
+                       for _ in range(10))
+
 
 def confirm(request):
-    res = send_mail("confirm mail", "<a href='127.0.0.1:8000/main/complete'>點擊認證</a><br>",
-                    "kevinliang1018@gmail.com", ['kevinliang1018@gmail.com'])
-    return HttpResponse('%s' % res)
+    global complete_key
+    if request.GET.get('k') == complete_key:
+        dreamreal = Dreamreal(
+            lastname=complete[0],
+            firstname=complete[1],
+            pid=complete[2],
+            email=complete[3],
+            passwd=complete[4]
+        )
+
+        dreamreal.save()
+        messages.add_message(
+            request, messages.INFO, '註冊成功')
+        return redirect('login')
+    else:
+        messages.add_message(
+            request, messages.INFO, '驗證錯誤，請重新註冊!')
+        return render(request, 'signIn.html')
 
 
 def signIn(request):
@@ -39,42 +60,25 @@ def signIn(request):
                 return render(request, 'signIn.html')
             else:
                 # sendSimpleEmail(request, email)
+                global complete_key
+                lastname = str(lastname)
+                firstname = str(firstname)
+                pid = str(pid)
+                email = str(email)
+                passwd = str(passwd)
+                send_mail("confirm mail", "進入此連結驗證:127.0.0.1:8000/main/confirm?k=%s" % complete_key,
+                          "kevinliang1018@gmail.com", [email])
 
-                dreamreal = Dreamreal(
-                    lastname=str(lastname),
-                    firstname=str(firstname),
-                    pid=str(pid),
-                    email=str(email),
-                    passwd=str(passwd)
-                )
+                global complete
+                complete = [lastname, firstname, pid, email, passwd]
 
-                dreamreal.save()
-                messages.add_message(
-                    request, messages.INFO, '註冊成功')
-                return redirect('login')
+                return HttpResponse('請至信箱驗證')
         except:
             messages.add_message(
                 request, messages.INFO, '身分證或email已註冊過!')
             return render(request, 'signIn.html')
     else:
         return render(request, 'signIn.html')
-
-    # # Update
-    # dreamreal = Dreamreal(
-    #     website="www.google.com",
-    #     mail="alvin@google.com.com",
-    #     name="alvin",
-    #     phonenumber="0911222444"
-    # )
-
-    # dreamreal.save()
-    # res += 'Updating entry<br>'
-
-    # dreamreal = Dreamreal.objects.get(name='alvin')
-    # dreamreal.name = 'mary'
-    # dreamreal.save()
-
-    # return HttpResponse(res)
 
 
 def login(request):
@@ -117,15 +121,30 @@ def logout(request):
         pass
     return redirect("login")
 
-    # def loginProcess(request):
-    #     name = request.POST('user')
-    #     passwd = request.POST('passwd')
 
-    #     try:
-    #         user = account.objects.get(userName=name)
-    #         if user.passwd == passwd:
-    #             return HttpResponse('success')
-    #         else:
-    #             return HttpResponse('fail')
-    #     except:
-    #         return HttpResponse('no account')
+def reset(request):
+    if request.method == 'POST':
+        account = request.POST['account']
+        re_pass = request.POST['repass']
+        try:
+            user = Dreamreal.objects.get(pid=account)
+        except:
+            user = Dreamreal.objects.get(email=account)
+
+        try:
+            if user.passwd == re_pass:
+                messages.add_message(
+                    request, messages.INFO, '不可與原秘碼相同!')
+                return render(request, 'reset.html')
+            else:
+                user.passwd = re_pass
+                user.save()
+
+                messages.add_message(
+                    request, messages.INFO, '密碼重設完成!')
+
+                return redirect("login")
+        except:
+            messages.add_message(
+                request, messages.INFO, '非預期錯誤!')
+            return render(request, 'reset.html')
