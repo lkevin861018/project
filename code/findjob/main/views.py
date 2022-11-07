@@ -50,11 +50,13 @@ def signIn(request):
         email = request.POST['email']
         passwd = request.POST['passwd']
         try:
-            Dreamreal.objects.get(pid=pid) == None
-            Dreamreal.objects.get(email=email) == None
-            account_exist = 1
-        except:
+            try:
+                Dreamreal.objects.get(pid=pid)
+            except:
+                Dreamreal.objects.get(email=email)
             account_exist = 0
+        except:
+            account_exist = 1
 
         if account_exist:
             if '' in [lastname, firstname, pid, email, passwd]:
@@ -159,3 +161,13 @@ def reset(request):
             messages.add_message(
                 request, messages.INFO, '非預期錯誤!')
             return render(request, 'reset.html')
+
+
+def test(request):
+    try:
+        Dreamreal.objects.get(pid='pid')
+        a = 1
+    except:
+        Dreamreal.objects.get(email='email')
+        a = 0
+    HttpResponse(a)

@@ -26,6 +26,7 @@ urlpatterns = [
     re_path(r'^login/', views.login, name='login'),
     re_path(r'^logout/', views.logout, name='logout'),
     re_path(r'^confirm/', views.confirm, name='confirm'),
+    re_path(r'^test/', views.test, name='test'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
