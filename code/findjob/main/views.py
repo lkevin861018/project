@@ -18,22 +18,27 @@ complete_key = ''.join(random.choice(string.ascii_letters + string.digits)
 
 def confirm(request):
     global complete_key
-    if request.GET.get('k') == complete_key:
-        dreamreal = Dreamreal(
-            lastname=complete[0],
-            firstname=complete[1],
-            pid=complete[2],
-            email=complete[3],
-            passwd=complete[4]
-        )
+    try:
+        if request.GET.get('k') == complete_key:
+            dreamreal = Dreamreal(
+                lastname=complete[0],
+                firstname=complete[1],
+                pid=complete[2],
+                email=complete[3],
+                passwd=complete[4]
+            )
 
-        dreamreal.save()
+            dreamreal.save()
+            messages.add_message(
+                request, messages.INFO, '註冊成功')
+            return redirect('login')
+        else:
+            messages.add_message(
+                request, messages.INFO, '驗證錯誤，請重新註冊!')
+            return render(request, 'signIn.html')
+    except:
         messages.add_message(
-            request, messages.INFO, '註冊成功')
-        return redirect('login')
-    else:
-        messages.add_message(
-            request, messages.INFO, '驗證錯誤，請重新註冊!')
+            request, messages.INFO, '帳號已驗證過!')
         return render(request, 'signIn.html')
 
 
@@ -44,8 +49,14 @@ def signIn(request):
         pid = request.POST['pid']
         email = request.POST['email']
         passwd = request.POST['passwd']
-
         try:
+            Dreamreal.objects.get(pid=pid) == None
+            Dreamreal.objects.get(email=email) == None
+            account_exist = 1
+        except:
+            account_exist = 0
+
+        if account_exist:
             if '' in [lastname, firstname, pid, email, passwd]:
                 messages.add_message(
                     request, messages.INFO, '資料不完整請重新輸入!')
@@ -66,14 +77,14 @@ def signIn(request):
                 pid = str(pid)
                 email = str(email)
                 passwd = str(passwd)
-                send_mail("confirm mail", "進入此連結驗證:127.0.0.1:8000/main/confirm?k=%s" % complete_key,
+                send_mail("confirm mail", "進入此連結驗證:http://127.0.0.1:8000/main/confirm?k=%s" % complete_key,
                           "kevinliang1018@gmail.com", [email])
 
                 global complete
                 complete = [lastname, firstname, pid, email, passwd]
 
                 return HttpResponse('請至信箱驗證')
-        except:
+        else:
             messages.add_message(
                 request, messages.INFO, '身分證或email已註冊過!')
             return render(request, 'signIn.html')

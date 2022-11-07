@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +9,16 @@
 </head>
 <body>
     <form action = "/main/signIn/" method = "POST">
+        {% if messages %}
+        {% for message in messages %}
+            <script>
+                alert('{{ message}}');
 
-            {% for message in messages %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>註冊失敗</strong> {{ message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
+            </script>
             {% endfor %}
+        {% endif %}
+
+
 
         {% csrf_token %}
         <h1>基本資料註冊</h1>
