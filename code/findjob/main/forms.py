@@ -28,3 +28,14 @@ class DreamrealForm(forms.Form):
 class ProfileForm(forms.Form):
     name = forms.CharField(max_length=100)
     picture = forms.ImageField()
+    
+
+class user_resume(forms.Form):
+    pid = forms.CharField(max_length=50)
+    lastname = forms.CharField(max_length=50)
+    firstname = forms.CharField(max_length=50)
+    user_resumestyle = forms.CharField(max_length=50)
+    user_skill = forms.CharField(max_length=200)
+    user_selfintroduction = forms.CharField(max_length=2000)
+    user_education = forms.CharField(max_length=200)
+    user_experience = forms.CharField(max_length=2000)

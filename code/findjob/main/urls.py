@@ -19,6 +19,7 @@ from main import views
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -27,6 +28,10 @@ urlpatterns = [
     re_path(r'^logout/', views.logout, name='logout'),
     re_path(r'^confirm/', views.confirm, name='confirm'),
     re_path(r'^test/', views.test, name='test'),
+    re_path(r'^resume_style/', views.resume_style, name='resume_style'),
+    re_path(r'^resume_edit/', views.resume_edit, name='resume_edit'),
+    re_path(r'^resume_save/', views.resume_save, name='resume_save'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
