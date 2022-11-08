@@ -95,13 +95,26 @@ def signIn(request):
 
 
 def login(request):
-    if request.method == 'POST':
-        if request.session.has_key('account'):
+    try:
+        if 'account' in request.session:
             account = request.session['account']
             passwd = request.session['passwd']
+            try:
+                user = Dreamreal.objects.get(pid=account)
+            except:
+                user = Dreamreal.objects.get(email=account)
+            if passwd == user.passwd:
+                return render(request, 'main.html')
+            else:
+                del request.session['account']
+                del request.session['passwd']
         else:
-            account = request.POST['account']
-            passwd = request.POST['passwd']
+            pass
+    except:
+        pass
+    if request.method == 'POST':
+        account = request.POST['account']
+        passwd = request.POST['passwd']
 
         try:
             try:
@@ -117,6 +130,7 @@ def login(request):
             else:
                 messages.add_message(
                     request, messages.INFO, '帳號或密碼錯誤!')
+                del request.session['account']
                 return render(request, 'login.html')
         except:
             messages.add_message(
@@ -163,11 +177,5 @@ def reset(request):
             return render(request, 'reset.html')
 
 
-def test(request):
-    try:
-        Dreamreal.objects.get(pid='pid')
-        a = 1
-    except:
-        Dreamreal.objects.get(email='email')
-        a = 0
-    HttpResponse(a)
+def index(request):
+    return render(request, 'index.html')

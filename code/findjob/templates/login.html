@@ -8,7 +8,8 @@
     <title>Document</title>
 </head>
 <body>
-    <form action = "/main/login/" method = "POST">
+    {% comment %} <form action = "/main/login/" method = "POST"> {% endcomment %}
+    <form action="{% url 'login' %}" method="POST">
 
         {% if messages %}
         {% for message in messages %}
