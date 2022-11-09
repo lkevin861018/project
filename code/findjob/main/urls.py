@@ -15,10 +15,11 @@ Including another URLconf
 """
 
 from django.urls import path, include, re_path
-from main import views
+from main import views, view2
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf import settings
+from django.conf.urls.static import static
 
 
 urlpatterns = [
@@ -27,6 +28,10 @@ urlpatterns = [
     re_path(r'^logout/', views.logout, name='logout'),
     re_path(r'^confirm/', views.confirm, name='confirm'),
     re_path(r'^index/', views.index, name='index'),
+    re_path(r'^resume_style/', view2.resume_style, name='resume_style'),
+    re_path(r'^resume_edit/', view2.resume_edit, name='resume_edit'),
+    re_path(r'^resume_save/', view2.resume_save, name='resume_save'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

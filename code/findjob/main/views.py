@@ -3,12 +3,12 @@ from urllib import response
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.contrib import messages
-from main.models import Dreamreal
+from main.models import Dreamreal, user_resume
 from django.core.mail import send_mail
 import re
 import string
 import random
-
+import datetime
 # Create your views here.
 
 complete = []
@@ -179,3 +179,6 @@ def reset(request):
 
 def index(request):
     return render(request, 'index.html')
+
+
+

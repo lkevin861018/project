@@ -13,3 +13,17 @@ class Dreamreal(models.Model):
 
     class Meta:
         db_table = 'dreamreal'
+        
+class user_resume(models.Model):
+    pid = models.CharField(max_length=50)
+    lastname = models.CharField(max_length=50)
+    firstname = models.CharField(max_length=50)
+    user_resumestyle = models.CharField(max_length=50)
+    user_skill = models.CharField(max_length=200)
+    user_selfintroduction = models.CharField(max_length=2000)
+    user_education = models.CharField(max_length=200)
+    user_experience = models.CharField(max_length=2000)
+
+    class Meta:
+        db_table = 'user_resume'
+
