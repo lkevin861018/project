@@ -91,7 +91,7 @@ EMAIL_HOST = "smtp.gmail.com"
 
 EMAIL_HOST_USER = "kevinliang1018"
 
-EMAIL_HOST_PASSWORD = "ldytjzqurbwatdkc"
+EMAIL_HOST_PASSWORD = "fqutxbwwodtsdylq"
 
 EMAIL_PORT = "465"
 
@@ -187,8 +187,10 @@ MEDIA_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # STATIC_ROOT = os.path.join(os.path.dirname(
 #     os.path.abspath(__file__)), 'static')
-STATIC_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
+STATICFILES_DIRS = [
+    # os.path.join(BASE_DIR, 'static'),
+    os.path.join(BASE_DIR, 'findjob/static'),
+
+]
 STATIC_URL = '/static/'
 django_heroku.settings(locals())
