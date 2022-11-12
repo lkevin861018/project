@@ -185,6 +185,7 @@ DAJAXICE_MEDIA_PREFIX = 'dajaxice'
 
 MEDIA_ROOT = os.path.dirname(os.path.abspath(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+<<<<<<< HEAD
 # STATIC_ROOT = os.path.join(os.path.dirname(
 #     os.path.abspath(__file__)), 'static')
 STATICFILES_DIRS = [
@@ -192,5 +193,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'findjob/static'),
 ]
 
+=======
+#STATIC_ROOT = os.path.join(os.path.dirname(
+#     os.path.abspath(__file__)), 'static')
+STATIC_DIRS = [os.path.join(BASE_DIR, 'static'),]
+>>>>>>> 8360abeca5f5d0ce7fce689fc9c7069567768d98
 STATIC_URL = '/static/'
 django_heroku.settings(locals())
