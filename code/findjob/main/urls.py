@@ -37,6 +37,7 @@ urlpatterns = [
     re_path(r'^search_hahow/', search.search_hahow, name='search_hahow'),
     re_path(r'^parttime/', viewjobs.parttime, name='parttime'),
     re_path(r'^fulltime/', viewjobs.fulltime, name='fulltime'),
+    re_path(r'^joblist/', views.joblist, name='joblist'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
