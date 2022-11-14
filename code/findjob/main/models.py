@@ -37,3 +37,16 @@ class companyacc(models.Model):
 
     class Meta:
         db_table = 'campanyacc'
+        
+class companyacc_jobs(models.Model):
+    number = models.CharField(max_length=50)
+    companyname = models.CharField(max_length=50)
+    title = models.CharField(max_length=2000)
+    uploaddate = models.CharField(max_length=200)
+    content = models.CharField(max_length=200)
+    require = models.CharField(max_length=2000)
+    benefits = models.CharField(max_length=2000)
+    email = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'companyacc_jobs'
