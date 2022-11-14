@@ -447,7 +447,7 @@ def comanyjobs_edit(request):
         pid = company.pid
         email = company.email
         jobslist={pid+"_1":"職缺一",pid+"_2":"職缺二",pid+"_3":"職缺三",pid+"_4":"職缺四",pid+"_5":"職缺五"}
-        jobs_info = ["",company.companyname,"","","","","",email]  
+        jobs_info = ["",company.companyname,"","","","","","",email,""]  
     except:
         messages.add_message(request, messages.INFO, '請進行登入!')
         return redirect('index')
@@ -464,7 +464,9 @@ def comanyjobs_edit(request):
             jobs_info[3] = jobs.uploaddate
             jobs_info[4] = jobs.content
             jobs_info[5] = jobs.require
-            jobs_info[6] = jobs.benefits
+            jobs_info[6] = jobs.salary
+            jobs_info[7] = jobs.benefits
+            jobs_info[9] = jobs.address
         else:
             jobs_info[0] = jobs_number
         return render(request, "company_jobs.html", {"jobs_info": jobs_info,"jobslist":jobslist[jobs_number]})
@@ -477,7 +479,9 @@ def comanyjobs_edit(request):
             jobs_info[3] = jobs.uploaddate
             jobs_info[4] = jobs.content
             jobs_info[5] = jobs.require
-            jobs_info[6] = jobs.benefits
+            jobs_info[6] = jobs.salary
+            jobs_info[7] = jobs.benefits
+            jobs_info[9] = jobs.address
         except:
             pass            
         return render(request, "company_jobs.html", {"jobs_info": jobs_info,"jobslist":jobslist[jobs_number]})
@@ -508,12 +512,27 @@ def comanyjobs_save(request):
         jobs.uploaddate = time
         jobs.content = request.POST['content']
         jobs.require = request.POST['require']
+        jobs.salary = request.POST['salary']
         jobs.benefits = request.POST['benefits']
         jobs.email = company.email
+        jobs.address = request.POST['address']
         jobs.save()
-        jobs_info = [jobs.number,jobs.companyname,jobs.title,jobs.uploaddate,jobs.content,jobs.require,jobs.benefits,jobs.email]
+        jobs_info = [jobs.number,jobs.companyname,jobs.title,jobs.uploaddate,jobs.content,jobs.require,jobs.salary,jobs.benefits,jobs.email,jobs.address]
         messages.add_message(
             request, messages.INFO, 'Saved at %s' % time)
         return render(request, "company_jobs.html", {"jobs_info": jobs_info,"jobslist":jobslist[jobs_number]})
     else:
         return redirect("company_jobs.html")
+    
+def partnerjobs(request):
+    jobslist = companyacc_jobs.objects.all()
+    jobs_info = []
+    for jobs in jobslist:
+        if '' in [jobs.number,jobs.companyname,jobs.title,jobs.uploaddate,jobs.content,jobs.require,jobs.salary,jobs.benefits,jobs.email,jobs.address]:
+            continue
+        else:
+            jobs_info.append([jobs.number,jobs.companyname,jobs.title,jobs.uploaddate,jobs.content,jobs.require,jobs.salary,jobs.benefits,jobs.email,jobs.address])
+    if request.method == 'POST':
+        return render(request, "partnerjobs.html", {"jobs_info": jobs_info})
+    else:
+        return render(request, "partnerjobs.html", {"jobs_info": jobs_info})

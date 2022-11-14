@@ -45,8 +45,10 @@ class companyacc_jobs(models.Model):
     uploaddate = models.CharField(max_length=200)
     content = models.CharField(max_length=200)
     require = models.CharField(max_length=2000)
+    salary = models.CharField(max_length=50)
     benefits = models.CharField(max_length=2000)
     email = models.CharField(max_length=50)
-
+    address = models.CharField(max_length=200)
+    
     class Meta:
         db_table = 'companyacc_jobs'
