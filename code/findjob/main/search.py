@@ -22,6 +22,7 @@ def search104(request):
         #---------------------------------------------------------------------------##
 
         keyword = request.POST['keyword']
+        keyword.encode('utf-8').decode('latin1')
         num = request.POST['num']
         area = request.POST['area']
         url = "https://www.104.com.tw/jobs/search/?keyword=" + \
@@ -93,10 +94,13 @@ def search104(request):
                        tempEducationListData[i],
                        tempSalaryListData[i],
                        tempHrefListData[i]])
-
-        return render(request, 'search104.html', context={'FTjob': df})
+        res = render(request, 'search104.html', context={'FTjob': df})
+        res.set_cookie('keyword', keyword)
+        return res
     else:
-        return render(request, 'search104.html')
+        res = render(request, 'search104.html')
+        res.set_cookie('keyword', '')
+        return res
 
 
 def search_hahow(request):
