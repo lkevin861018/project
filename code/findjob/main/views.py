@@ -181,9 +181,13 @@ def login(request):
                 request.session['passwd'] = user.passwd
                 try:
                     request.session['status'] = str(user.companyname)
+                    request.session['account'] = account
+                    request.session['user'] = "company"
                 except:
                     request.session['status'] = str(
                         user.firstname)+str(user.lastname)
+                    request.session['account'] = account
+                    request.session['user'] = "user"
                 return redirect('index')
             else:
                 messages.add_message(
@@ -266,7 +270,8 @@ def reset(request):
 def index(request):
     try:
         status = request.session['status']
-        return render(request, 'index.html', context={'status': status})
+        user = request.session['user']
+        return render(request, 'index.html', context={'status': status,'user':user})
     except:
         return render(request, 'index.html')
 
