@@ -1,3 +1,6 @@
+import re
+import threading
+import time
 from selenium import webdriver
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -110,46 +113,62 @@ def search_hahow(request):
         priceListdata = []
         page = request.POST['page']
         keyword = request.POST['keyword']
-        url = 'https://hahow.in/courses?page=%s' % page
-        # if '' in [keyword]:
-        #     url = 'https://hahow.in/courses?page=%s' % page
-        #     way = 1
-        # else:
-        #     url = 'https://hahow.in/search/courses?query=%s&page=%s' % (
-        #         keyword, page)
-        #     way = 2
-        chrome_options = Options()
-        chrome_options.add_argument("--headless")
-    # heroku上使用
-        chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-        chrome_options.add_argument("--disable-dev-shm-usage")
-        chrome_options.add_argument("--no-sandbox")
-        browser = webdriver.Chrome(executable_path=os.environ.get(
-            "CHROMEDRIVER_PATH"), chrome_options=chrome_options)
-        # browser = webdriver.Chrome(options=chrome_options)
-        browser.implicitly_wait(10)
-        browser.get(url)
-        browser.set_window_size(800, 800)
-        urlsource = browser.page_source
-        # browser.set_page_load_timeout(5)
+        # url = 'https://hahow.in/courses?page=%s' % page
+        if '' in [keyword]:
+            url = 'https://hahow.in/courses?page=%s' % page
+            way = 1
+        else:
+            url = 'https://hahow.in/search/courses?query=%s&page=%s' % (
+                keyword, page)
+            way = 2
 
-        soup = BeautifulSoup(urlsource, 'html.parser')
-        titleList = soup.select('div.list-container a h4.txt-bold')
-        nameList = soup.select('div.list-container div.course-meta p')
-        priceList = soup.select('div.list-container div.course-status-bar')
-        # if way == 1:
-        #     titleList = soup.select('div.list-container a h4.txt-bold')
-        #     nameList = soup.select('div.list-container div.course-meta p')
-        #     priceList = soup.select('div.list-container div.course-status-bar')
-        # elif way == 2:
-        #     titleList = soup.select('div.list-container a h4.txt-bold')
-        #     nameList = soup.select('div.list-container div.course-meta p')
-        #     priceList = soup.select('div.list-container div.course-status-bar')
+        def chrome():
+            chrome_options = Options()
+            chrome_options.add_argument("--headless")
+        # heroku上使用
+            # chrome_options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+            # chrome_options.add_argument("--disable-dev-shm-usage")
+            # chrome_options.add_argument("--no-sandbox")
+            # browser = webdriver.Chrome(executable_path=os.environ.get(
+            #     "CHROMEDRIVER_PATH"), chrome_options=chrome_options)
+            browser = webdriver.Chrome(options=chrome_options)
+            browser.implicitly_wait(10)
+            browser.get(url)
+            browser.set_window_size(900, 900)
+            urlsource = browser.page_source
+            # browser.set_page_load_timeout(5)
+            global soup
+            soup = BeautifulSoup(urlsource, 'html.parser')
+
+        t = threading.Thread(target=chrome)
+        t.start()
+        t.join()
+
+        # titleList = soup.select('div.list-container a h4.txt-bold')
+        # nameList = soup.select('div.list-container div.course-meta p')
+        # priceList = soup.select('div.list-container div.course-status-bar')
+        if way == 1:
+            titleList = soup.select('div.list-container a h4.txt-bold')
+            nameList = soup.select('div.list-container div.course-meta p')
+            priceList = soup.select('div.list-container div.course-status-bar')
+        elif way == 2:
+            titleList = soup.select('div.sc-18817me-0 h4')
+            nameList = soup.select('div.sc-18817me-0 p')
+            priceList = soup.select(
+                'div.sc-18817me-0 div.course-status-bar div span')
 
         for title, name, price in zip(titleList, nameList, priceList):
             temptitle = title.text
             tempName = name.text.replace('．', '')
-            tempprice = 'NT'+price.text.replace('|', '').strip().split('NT')[1]
+            try:
+                tempprice = 'NT' + \
+                    price.text.replace('|', '').strip().split('NT')[1]
+            except:
+                # pattern = "NT.+"
+                # tempprice = re.findall(pattern, price.text)
+                # tempprice = 'NT' + \
+                #     price.text.replace('|', '').strip().split('NT')[0]
+                tempprice = price.text
 
             titleListdata.append(temptitle)
             nameListdata.append(tempName)
