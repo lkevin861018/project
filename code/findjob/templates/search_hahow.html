@@ -1,4 +1,12 @@
 <body>
+   {% if messages %}
+        {% for message in messages %}
+            <script>
+                alert('{{ message}}');
+
+            </script>
+            {% endfor %}
+   {% endif %}
     <form action="{% url 'search_hahow' %}" method="POST">
     {% csrf_token %}
     <h1>課程查詢</h1>
@@ -19,6 +27,9 @@
     </a>
     <div class="partimejob">
         {% for Fclass in Fclass%}
+        <div class="Books_img">
+         <img width="140" alt="{{Fclass.0}}" src="{{Fclass.3}}">
+        </div>
         <div class="class">
            {{Fclass.0}}
         </div>
@@ -28,7 +39,9 @@
         <div class="price">
             {{Fclass.2}}</a>
          </div>
+         <input type="submit" value="加入購物"><br>
         <br>
+        <a href="/main/shoppingr?type=c&item={{Flass.0}}"><button>加入購物</button></a>
         {% endfor%}
         <br>
      </div>
